@@ -1,0 +1,18 @@
+---
+sshd_service_name: sshd
+sshd_service_state: started
+
+sshd_listen_address: 0.0.0.0
+sshd_port: 22
+sshd_allowed_users: ag
+sshd_password_authenticaton: no
+sshd_permit_root_login: no
+sshd_log_level: VERBOSE
+
+sshd_host_keys:
+  - ssh_host_rsa_key
+  - ssh_host_rsa_key.pub
+  - ssh_host_ed25519
+  - ssh_host_ed25519.pub
+  - ssh_host_ecdsa
+  - ssh_host_ecdsa.pub

@@ -1,0 +1,10 @@
+---
+- name: Restart sshd
+  service:
+    name: "{{ sshd_service_name }}"
+    state: restarted
+- name: Remove known host key
+  local_action:
+    module: shell
+    args:
+      cmd: sudo --user=ag ssh-keygen -f /home/ag/.ssh/known_hosts -R "{{ ansible_host }}"

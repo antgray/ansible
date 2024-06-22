@@ -1,0 +1,26 @@
+---
+- name: Include OS vars
+  include_vars: "{{ ansible_os_family }}.yml"
+
+- name: Ensure sshd is running
+  service:
+    name: "{{ sshd_service_name }}"
+    state: "{{ sshd_service_state }}"
+
+- name: Remove ssh host keys
+  file:
+    path: "/etc/ssh/{{ item }}"
+    state: absent
+  loop: "{{ sshd_host_keys }}"
+
+- name: Copy config file
+  template:
+    src: templates/sshd_config.j2
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0600
+    validate: sshd -T -f %s
+  notify:
+    - Restart sshd
+    - Remove known host key
