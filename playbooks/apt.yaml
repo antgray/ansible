@@ -1,0 +1,35 @@
+- name: Install unattended upgrades package.
+  hosts: all
+  become: true
+  tasks:
+    - name: Update apt package manager
+      apt:
+        update_cache: yes
+        autoclean: yes
+        upgrade: dist
+
+    - name: Install packages
+      apt:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - unattended-upgrades
+        - apt-listchanges
+        - git
+        - vim
+        - curl
+
+    - name: Copy unattended-upgrades configuration files in place.
+      copy:
+        src: ../files/02periodic
+        dest: /etc/apt/apt.conf.d/02periodic
+        owner: root
+        group: root
+        mode: 0644
+
+    - name: Reboot if necessary
+      command: reboot
+      async: 0
+      poll: 0
+      ignore_errors: yes
+      when: ansible_reboot_pending|bool

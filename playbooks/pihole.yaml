@@ -1,0 +1,56 @@
+---
+- name: Configure pihole
+  hosts: all
+  become: true
+  tasks:
+    - name: Download script
+      get_url:
+        url: https://install.pi-hole.net
+        dest: /home/ag
+        mode: +x
+
+    - name: Download unbound
+      apt:
+        name: unbound
+        state: present
+
+    - name: Copy config file
+      copy:
+        src: ../files/pi-hole.conf
+        dest: /etc/unbound/unbound.conf.d/pi-hole.conf
+
+    - name: Restart
+      systemd_service:
+        name: unbound
+        state: restarted
+
+    - name: Change dnsmasq config
+      lineinfile:
+        create: true
+        path: /etc/dnsmasq.d/99-edns.conf
+        line: '/etc/dnsmasq.d/99-edns.conf'
+
+    - name: Validate DNS resolution for Unbound service
+      shell: dig pi-hole.net @127.0.0.1 -p 5335
+      ignore_errors: yes
+      register: dns_output
+
+    - name: Check if DNS resolution is successful
+      fail:
+        msg: "DNS resolution failed for pi-hole.net"
+      when: dns_output.rc != 0
+
+    - name: Test DNSSEC validation for fail01.dnssec.works
+      command: dig fail01.dnssec.works @127.0.0.1 -p 5335
+      register: result_fail01
+      ignore_errors: yes
+
+    - debug:
+        msg: "Validation for fail01.dnssec.works: {{ 'SUCCESS' if result_fail01.stdout.find('SERVFAIL') != -1 and result_fail01.stdout.find('NOERROR') == -1 else 'FAILED' }}"
+
+    - name: Test DNSSEC validation for dnssec.works
+      command: dig dnssec.works @127.0.0.1 -p 5335
+      register: result_dnssec
+
+    - debug:
+        msg: "Validation for dnssec.works: {{ 'SUCCESS' if result_dnssec.stdout.find('NOERROR') != -1 else 'FAILED' }}"

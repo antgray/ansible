@@ -1,0 +1,7 @@
+---
+- name: Configure sshd with role
+  hosts: all
+  become: true
+  gather_facts: true
+  roles:
+    - ansible-role-docker

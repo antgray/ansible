@@ -1,0 +1,7 @@
+---
+- name: Import
+  import_playbook: user.yaml
+- name: Import
+  import_playbook: sshd.yaml
+- name: Import
+  import_playbook: apt.yaml

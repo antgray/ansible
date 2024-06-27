@@ -1,0 +1,30 @@
+---
+- name: Create user
+  become: true
+  hosts: all
+  tasks:
+    - name: Create user with specified UID, shell and groups
+      user:
+        name: ag
+        password: $6$rounds=656000$mysecretsalt$rRJkHTR4S4isz3ITzPErREDCIUcD8OCVHt8uf1I90pCroT8YEyw06mCIaxM56xUl9Qh7Nklv.D9XLc8RmFLCZ1
+        uid: 5000
+        shell: /bin/bash
+        groups: sudo
+        createhome: yes
+        home: /home/ag
+    - name: Copy SSH key to authorized_keys
+      authorized_key:
+        user: ag
+        key: "{{ lookup('file', '/home/ag/.ssh/{{ item }}') }}"
+      with_items:
+        - id_ed25519.pub
+        - id_ed25519_sk_a.pub
+        - id_ed25519_sk_c.pub
+    - name: Copy SSH key to authorized_keys
+      authorized_key:
+        user: root
+        key: "{{ lookup('file', '/home/ag/.ssh/{{ item }}') }}"
+      with_items:
+        - id_ed25519.pub
+        - id_ed25519_sk_a.pub
+        - id_ed25519_sk_c.pub
