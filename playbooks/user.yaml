@@ -3,6 +3,7 @@
   become: true
   hosts: all
   tasks:
+
     - name: Create user with specified UID, shell and groups
       user:
         name: ag
@@ -12,7 +13,8 @@
         groups: sudo
         createhome: yes
         home: /home/ag
-    - name: Copy SSH key to authorized_keys
+
+    - name: Change authorized keys
       authorized_key:
         user: ag
         key: "{{ lookup('file', '/home/ag/.ssh/{{ item }}') }}"
@@ -20,6 +22,7 @@
         - id_ed25519.pub
         - id_ed25519_sk_a.pub
         - id_ed25519_sk_c.pub
+
     - name: Copy SSH key to authorized_keys
       authorized_key:
         user: root

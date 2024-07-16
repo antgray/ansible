@@ -1,0 +1,24 @@
+---
+- name: Patching and Updating Linux Systems
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update Debian-based Systems
+      when: ansible_os_family == 'Debian'
+      apt:
+        update_cache: yes
+        upgrade: dist
+      register: apt_update_status
+
+    - name: Reboot when packages were updated
+      reboot:
+        post_reboot_delay: 60
+      when: apt_update_status.changed
+
+    - name: Update Arch-based Systems
+      when: ansible_os_family == 'Archlinux'
+      pacman:
+        state: latest
+        update_cache: yes
+        upgrade: yes
