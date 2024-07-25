@@ -12,7 +12,7 @@ sshd_log_level: VERBOSE
 sshd_host_keys:
   - ssh_host_rsa_key
   - ssh_host_rsa_key.pub
-  - ssh_host_ed25519
-  - ssh_host_ed25519.pub
-  - ssh_host_ecdsa
-  - ssh_host_ecdsa.pub
+  - ssh_host_ed25519_key
+  - ssh_host_ed25519_key.pub
+  - ssh_host_ecdsa_key
+  - ssh_host_ecdsa_key.pub
